@@ -9,7 +9,7 @@ from mongoengine import (
     ListField, EmbeddedDocumentField, EmbeddedDocument, BooleanField)
 
 
-connect('skype', host="127.0.01", port=27017)
+connect('skype', host="127.0.0.1", port=27017)
 
 
 class SkypeUserModel(Document):
@@ -22,6 +22,7 @@ class SkypeRoomModel(Document):
     room_id = StringField(unique=True, required=True)
     caller = StringField()
     callee = StringField()
+    accepted = BooleanField(default=False)
     chats = ListField(StringField())
 
 

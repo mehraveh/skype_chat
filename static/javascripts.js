@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html>
-<body>
-<script> 
 var session = ''
 function login() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("login").innerHTML = this.responseText;
+      document.getElementById("login").innerHTML = this.responseText.split('$')[1];
       session = this.responseText.split('$')[0]
     }
   };
@@ -36,7 +32,6 @@ function create() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       document.getElementById("create-room").innerHTML = this.responseText;
-      alert(session)
     }
   }  
   var caller = session
@@ -55,43 +50,3 @@ function rooms() {
   xhttp.send();
 }
 
-var source2 = new EventSource("{{ url_for('sse.stream') }}");
-source2.addEventListener(session, function(event) {
-    var data = JSON.parse(event.data);
-    window.location.pathname = '/join2/';
-}, false);
-</script>
-
-<h2>Skype chat</h2>
-
-<div id='login'>
-    Username:<br>
-    <input type="text" id="usernamel" >
-    <br>
-    Password:<br>
-    <input type="password" id="passwordl" >
-    <br>
-    <button type="submit" onclick="login()"> login </button> 
-</div>
-
-
-<div id='signup'>
-    Username:<br>
-    <input type="text" id="username" >
-    <br>
-    Password:<br>
-    <input type="password" id="password" >
-    <br>
-    <button type="submit" onclick="signup()"> signup </button> 
-</div>
-
-<div id="create-room">
-    <button type="button" onclick="create()">create room</button>
-</div>
-
-<div id="rooms">
-    <button type="button" onclick="rooms()">rooms</button>
-</div>
-
-</body>
-</html>
