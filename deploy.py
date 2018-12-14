@@ -104,14 +104,13 @@ def contacts():
     return html_code
 
 
-@app.route("/add/<string:username>/<string:contact>", methods=['POST'])
-def add(username, contact):
+@app.route("/addcontact/<string:username>/<string:contact>", methods=['GET'])
+def addcontact(username, contact):
+    print(username, contact)
     user = SkypeUserModel.objects(username=username).first()
-    print(user)
     if not contact in user.contacts:
         user.contacts.append(contact)
         user.save()
-        print('wwwwwwwwwwwwwwww')
     return 'success'
 
 

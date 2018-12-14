@@ -258,13 +258,12 @@ function contacts() {
 
 function add(user) {
   var xhttp = new XMLHttpRequest();
-  var contact = ''
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-    alert(this.responseText);
+      alert(this.responseText);
     }
   }  
-  xhttp.open("POST", "/add/" + session + "/" + user + "/"  ,true);
+  xhttp.open("GET", "/addcontact/" + session + "/" + user + "/"  ,true);
   xhttp.send();
 }
 
