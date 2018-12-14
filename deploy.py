@@ -36,7 +36,7 @@ def login(username, password):
         Callee:<br>
         <input type="text" id="callee" >
         <br>
-        <button type="submit" onclick="create()"> create room </button> 
+        <button type="submit" onclick="create()" class="btn--blue"> create room </button> 
         </div>"""
 
 
@@ -78,7 +78,7 @@ def create(caller, callee):
         return 'The callee dosent exist'
     room = SkypeRoomModel(room_id=room_id, caller=caller,  callee=callee)
     room.save()
-    sse.publish({"message": 'new chat request from ' + room.caller + " to " + room.callee} +' 😌 ', type='room', channel='r')
+    sse.publish({"message": 'new chat request from ' + room.caller + " to " + room.callee +' 😌 '} , type='room', channel='r')
     return session['username'] +' sent chat request to ' + callee + ' with chat id ' + room_id + '. wait for her/him to accept' + ' $ ' + room_id
 
 
@@ -91,17 +91,46 @@ def rooms():
         callers.append(room.caller)
     for caller in callers:    
         #html_code +='<a href="/join/' + session['username'] + '/'+ room.room_id +'"/>' + caller +'</a> <br>'
-        html_code += '<button type="submit" onclick="select()"> ' + caller +' </button> <br>'
+        html_code += '<button type="submit" onclick="select('+ "'" + room.room_id +"'"+')"> ' + caller +' </button> <br>'
     return html_code 
+
+
+@app.route("/contacts/", methods=['POST'])
+def contacts():
+    html_code = ''
+    users = SkypeUserModel.objects()
+    for user in users:
+        html_code += '<p>' + user.username +'<br>'+ '<button type="submit" onclick="add(' + "'" + user.username + "'"+ ')"> ' + 'add' +' </button>' + '</p> <br>'
+    return html_code
+
+
+@app.route("/add/<string:username>/<string:contact>", methods=['POST'])
+def add(username, contact):
+    user = SkypeUserModel.objects(username=username).first()
+    print(user)
+    if not contact in user.contacts:
+        user.contacts.append(contact)
+        user.save()
+        print('wwwwwwwwwwwwwwww')
+    return 'success'
+
+
+@app.route("/mycontacts/<string:username>", methods=['POST'])
+def mycontacts(username):
+    html_code = ''
+    user = SkypeUserModel.objects(username=username).first()
+    for contact in user.contacts:
+        html_code += '<p>' + contact + '</p><br>'
+    return html_code
 
 
 @app.route("/join/<string:callee>/", methods=['POST'])
 def join(callee):
-    room = SkypeRoomModel.objects(callee=callee, accepted=False,).first()
+    room = SkypeRoomModel.objects(callee=callee, accepted=False).first()
     room.accepted = True
     room.save()
     print(room.caller)
-    sse.publish({"message": 'joined chat'}, type='join', channel='sss')
+    sse.publish({"message": 'joined chat'}, type='join', channel="s")
     return 'joined'
 
 

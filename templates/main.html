@@ -1,5 +1,181 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=PT+Sans:400,400italic);
+
+@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
+
+html, body{
+  background:#0088cc;
+}
+
+body{
+  counter-reset:section;
+  text-align:center;
+}
+
+.container{
+  position:relative;
+  top:100px;
+}
+
+.container h1, .container span{
+  font-family:"Pt Sans", helvetica, sans-serif;
+}
+
+.container h1{
+  text-align:center;
+  color:#fff;
+  font-weight:100;
+  font-size:2em; 
+  margin-bottom:10px;
+}
+
+.container h2{
+  font-family:"droid serif";
+  font-style:italic;
+  color:#d3b6ca; 
+  text-align:center;
+  font-size:1.2em;
+}
+
+.container span:before {
+  counter-increment:section;
+  content:counter(section);
+  border:2px solid #4c2639;
+  width:40px;
+  height:40px;
+  color:#fff;
+  display:inline-block;
+  border-radius:50%;
+  font-size:1.5em;
+  position:relative;
+  left:-22px;
+  top:-11px;
+  background:#2F1E27;
+}
+
+#login-form{
+  margin-top:70px;
+  margin-left: 200px;
+  display:inline-block;
+}
+
+#signup-form{
+  margin-top:70px;
+  margin-left: 100px;
+  display:inline-block;
+}
+
+.container span{
+    margin-bottom:22px; 
+    display:inline-block;
+}
+
+.container span:last-child{
+   margin-bottom:-11px;
+}
+
+input[type="text"]{
+  border:none;
+  outline:none;
+  display:inline-block;
+  height:34px;
+  vertical-align:middle;
+  position:relative;
+  bottom:14px;
+  right:9px;
+  border-radius:22px;
+  width:220px;
+  box-sizing:border-box;
+  padding:0 18px; 
+}
+
+input[type="password"]{
+  border:none;
+  outline:none;
+  display:inline-block;
+  height:34px;
+  vertical-align:middle;
+  position:relative;
+  bottom:14px;
+  right:9px;
+  border-radius:22px;
+  width:220px;
+  box-sizing:border-box;
+  padding:0 18px; 
+}
+
+
+
+
+.btn--green {
+
+    background: #57b846;
+
+}
+.btn--pill {
+
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+
+}
+.btn {
+
+    display: inline-block;
+    line-height: 30px;
+    padding: 0 33px;
+    font-family: Poppins, Arial, "Helvetica Neue", sans-serif;
+    cursor: pointer;
+    color: #fff;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    font-size: 18px;
+
+}
+
+#options{
+  margin-top: 100px;
+  float: right;
+  padding: 10px;
+}
+
+
+
+
+
+.btn--blue{
+      background: #4272d7;
+    display: inline-block;
+    line-height: 30px;
+    padding:5px 5px 5px 5px;
+    margin-right: 40px;
+    position: center;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    font-size: 18px;
+    color: #fff;
+    font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
+        -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+#list{
+
+  text-decoration: none;
+  color: darkblue;
+
+}
+  </style>
+</head>
 <body>
 <script> 
 var room_id = 'n'
@@ -10,7 +186,7 @@ function login() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("login").innerHTML = this.responseText;
+      document.getElementById("login").innerHTML = this.responseText.split('$')[0] + this.responseText.split('$')[1];
       session = this.responseText.split('$')[0]
     }
   };
@@ -43,7 +219,7 @@ function create() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("create-room").innerHTML = this.responseText.split('$')[0];
+      //document.getElementById("create-room").innerHTML = this.responseText.split('$')[0];
       room_id = this.responseText.split('$')[1]
     }
   }  
@@ -58,7 +234,7 @@ function rooms() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("rooms1").innerHTML = this.responseText;
+      document.getElementById("list").innerHTML = this.responseText;
 
     }
   }  
@@ -71,7 +247,7 @@ function contacts() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("contacts1").innerHTML = this.responseText;
+      document.getElementById("list").innerHTML = this.responseText;
 
     }
   }  
@@ -79,11 +255,25 @@ function contacts() {
   xhttp.send();
 }
 
+
+function add(user) {
+  var xhttp = new XMLHttpRequest();
+  var contact = ''
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    alert(this.responseText);
+    }
+  }  
+  xhttp.open("POST", "/add/" + session + "/" + user + "/"  ,true);
+  xhttp.send();
+}
+
+
 function mycontacts() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("mycontacts1").innerHTML = this.responseText;
+      document.getElementById("list").innerHTML = this.responseText;
 
     }
   }  
@@ -92,8 +282,9 @@ function mycontacts() {
 }
 
 
-function select() {
+function select(room) {
   var xhttp = new XMLHttpRequest(); 
+  room_id = room
   xhttp.open("POST", "/join/" + session + "/", true);
   xhttp.send();
 }
@@ -108,7 +299,7 @@ source1.addEventListener('room', function(event) {
 
 
 
-var source2 = new EventSource("/stream?channel=sss");
+var source2 = new EventSource("/stream?channel=s");
 source2.addEventListener('join', function(event) {
     alert(room_id)
     var data = JSON.parse(event.data);
@@ -117,54 +308,76 @@ source2.addEventListener('join', function(event) {
 
 
 </script>
-
-<h2>Skype chat</h2>
-
+<div id="login-form">
+<h2>Login</h2>
+<div id="container">
 <div id='login'>
-    Username:<br>
-    <input type="text" id="usernamel" >
-    <br>
-    Password:<br>
-    <input type="password" id="passwordl" >
-    <br>
-    <button type="submit" onclick="login()"> login </button> 
+    <span>
+      <input placeholder="Username" type="text" id="usernamel" >
+      </span>
+      <br>
+      <br/>
+      <span>
+      <input placeholder="password" type="password" id="passwordl" >
+      </span>
+      <br>
+    <button type="submit" class="btn btn--pill btn--green" onclick="login()"> login </button> 
+</div>
+</div>
 </div>
 
 
+<div id="signup-form">
+<h2>Sign up</h2>
+<div id="container">
 <div id='signup'>
-    Username:<br>
-    <input type="text" id="username" >
-    <br>
-    Password:<br>
-    <input type="password" id="password" >
-    <br>
-    <button type="submit" onclick="signup()"> signup </button> 
+    <span>
+      <input placeholder="Username" type="text" id="username" >
+      </span>
+      <br>
+      <br/>
+      <span>
+      <input placeholder="password" type="password" id="password" >
+      </span>
+      <br>
+    <button class="btn btn--pill btn--green" type="submit" onclick="signup()"> signup </button> 
+</div>
+</div>
 </div>
 
-<div id="create-room">
-    <button type="button" onclick="create()">create room</button>
-</div>
+
+<div id="options">
+
 
 <div id="rooms">
-    <button type="button" onclick="rooms()">rooms</button>
+    <button type="button" class="btn--blue" onclick="rooms()">rooms</button>
 </div>
-
+<br>
 <div id="rooms1">
 </div>
 
 <div id="contacts">
-    <button type="button" onclick="contacts()">all contacts</button>
+    <button type="button" class="btn--blue" onclick="contacts()"> all contacts </button>
 </div>
-
+<br>
 <div id="contacts1">
 </div>
 
 <div id="mycontacts">
-    <button type="button" onclick="mycontacts()">my contacts</button>
+    <button type="button" class="btn--blue" onclick="mycontacts()"> my contacts </button>
 </div>
-
+<br>
 <div id="mycontacts1">
 </div>
 
+<div id="list">
+  
+</div>
+<dir id='create-room'>
+  
+</dir>
+
+
+</div>
 </body>
 </html>
