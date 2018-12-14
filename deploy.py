@@ -78,7 +78,8 @@ def create(caller, callee):
         return 'The callee dosent exist'
     room = SkypeRoomModel(room_id=room_id, caller=caller,  callee=callee)
     room.save()
-    return session['username'] +' sent chat request to ' + callee + ' with chat id ' + room_id + '. wait for her/him to accept'
+    sse.publish({"message": 'new chat request from ' + room.caller + " to " + room.callee} +' 😌 ', type='room', channel='r')
+    return session['username'] +' sent chat request to ' + callee + ' with chat id ' + room_id + '. wait for her/him to accept' + ' $ ' + room_id
 
 
 @app.route("/rooms/", methods=['POST'])
@@ -89,17 +90,18 @@ def rooms():
     for room in rooms:
         callers.append(room.caller)
     for caller in callers:    
-        html_code +='<a href="/join/' + session['username'] + '"/>' + caller +'</a> <br>'
+        #html_code +='<a href="/join/' + session['username'] + '/'+ room.room_id +'"/>' + caller +'</a> <br>'
+        html_code += '<button type="submit" onclick="select()"> ' + caller +' </button> <br>'
     return html_code 
 
 
-@app.route("/join/<string:callee>/")
+@app.route("/join/<string:callee>/", methods=['POST'])
 def join(callee):
-    room = SkypeRoomModel.objects(callee=callee).first()
+    room = SkypeRoomModel.objects(callee=callee, accepted=False,).first()
     room.accepted = True
     room.save()
-    print(session['username'])
-    sse.publish({"message": 'joined chat'}, type= room.callee)
+    print(room.caller)
+    sse.publish({"message": 'joined chat'}, type='join', channel='sss')
     return 'joined'
 
 

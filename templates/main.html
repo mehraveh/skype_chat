@@ -2,7 +2,10 @@
 <html>
 <body>
 <script> 
+var room_id = 'n'
 var session = ''
+
+
 function login() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -11,11 +14,14 @@ function login() {
       session = this.responseText.split('$')[0]
     }
   };
+
+
   var us = document.getElementById("usernamel").value;
   var ps = document.getElementById("passwordl").value;
   xhttp.open("POST", "/login/"+ us +"/" + ps, true);
   xhttp.send();
 }
+
 
 function signup() {
   var xhttp = new XMLHttpRequest();
@@ -24,19 +30,21 @@ function signup() {
       document.getElementById("signup").innerHTML = this.responseText;
     }
   };
-//  alert(this.responseText)
+
+
   var us = document.getElementById("username").value;
   var ps = document.getElementById("password").value;
   xhttp.open("POST", "/signup/"+ us +"/" + ps, true);
   xhttp.send();
 }
 
+
 function create() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("create-room").innerHTML = this.responseText;
-      alert(session)
+      document.getElementById("create-room").innerHTML = this.responseText.split('$')[0];
+      room_id = this.responseText.split('$')[1]
     }
   }  
   var caller = session
@@ -44,22 +52,70 @@ function create() {
   xhttp.open("POST", "/create/"+ caller +"/" + callee, true);
   xhttp.send();
 }
+
+
 function rooms() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("rooms").innerHTML = this.responseText;
+      document.getElementById("rooms1").innerHTML = this.responseText;
+
     }
   }  
   xhttp.open("POST", "/rooms/", true);
   xhttp.send();
 }
 
-var source2 = new EventSource("{{ url_for('sse.stream') }}");
-source2.addEventListener(session, function(event) {
+
+function contacts() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("contacts1").innerHTML = this.responseText;
+
+    }
+  }  
+  xhttp.open("POST", "/contacts/", true);
+  xhttp.send();
+}
+
+function mycontacts() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("mycontacts1").innerHTML = this.responseText;
+
+    }
+  }  
+  xhttp.open("POST", "/mycontacts/", true);
+  xhttp.send();
+}
+
+
+function select() {
+  var xhttp = new XMLHttpRequest(); 
+  xhttp.open("POST", "/join/" + session + "/", true);
+  xhttp.send();
+}
+
+
+
+var source1 = new EventSource("/stream?channel=r");
+source1.addEventListener('room', function(event) {
+    var data = JSON.parse(event.data);
+    alert(data.message)
+}, false);
+
+
+
+var source2 = new EventSource("/stream?channel=sss");
+source2.addEventListener('join', function(event) {
+    alert(room_id)
     var data = JSON.parse(event.data);
     window.location.pathname = '/join2/';
 }, false);
+
+
 </script>
 
 <h2>Skype chat</h2>
@@ -91,6 +147,23 @@ source2.addEventListener(session, function(event) {
 
 <div id="rooms">
     <button type="button" onclick="rooms()">rooms</button>
+</div>
+
+<div id="rooms1">
+</div>
+
+<div id="contacts">
+    <button type="button" onclick="contacts()">all contacts</button>
+</div>
+
+<div id="contacts1">
+</div>
+
+<div id="mycontacts">
+    <button type="button" onclick="mycontacts()">my contacts</button>
+</div>
+
+<div id="mycontacts1">
 </div>
 
 </body>
