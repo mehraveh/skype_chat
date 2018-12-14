@@ -1,5 +1,6 @@
 flask==0.12.2
 flask-sse
+flask_session
 gunicorn==19.7.1
 gevent==1.2.2
-mongoengine=0.16.2
+mongoengine==0.16.2
