@@ -1,6 +1,7 @@
 import random, string
 import webbrowser
 
+from flask import request
 from flask import Flask, render_template, session
 from flask_sse import sse
 from flask_session import Session
@@ -136,7 +137,10 @@ def join(callee):
 
 @app.route("/join2/<string:user>/", methods=['GET'])    
 def join2(user):
-    webbrowser.open('http://0.0.0.0:5000/'+ user + '/', new=1)
+    b = request.user_agent.browser
+    if b == 'chrome':
+        b = 'google-chrome'
+    webbrowser.get(b).open_new_tab('http://0.0.0.0:5000/'+ user + '/')
     return render_template('pv.html')
 
             
