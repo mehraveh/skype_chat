@@ -130,17 +130,16 @@ def join(callee):
     room = SkypeRoomModel.objects(callee=callee, accepted=False).first()
     room.accepted = True
     room.save()
-    print(room.caller)
     sse.publish({"message": 'joined chat'}, type='join', channel="s")
     return 'joined'
 
 
-@app.route("/join2/<string:user>/", methods=['GET'])    
-def join2(user):
+@app.route("/join2/<string:user>/<string:room>/", methods=['GET'])    
+def join2(user, room):
     b = request.user_agent.browser
     if b == 'chrome':
         b = 'google-chrome'
-    webbrowser.get(b).open_new_tab('http://0.0.0.0:5000/'+ user + '/')
+    webbrowser.get(b).open_new_tab('http://0.0.0.0:5000/'+ user + '/' + room + '/')
     return render_template('pv.html')
 
             

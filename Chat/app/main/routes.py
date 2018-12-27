@@ -1,16 +1,15 @@
 from flask import session, redirect, url_for, render_template, request
 from . import main
-from .forms import LoginForm
 
 
-@main.route('/<string:user>/', methods=['GET', 'POST'])
-def index(user):
+@main.route('/<string:user>/<string:room_id>/', methods=['GET', 'POST'])
+def index(user, room_id):
+    room_id = 1
     session['name'] = user
-    session['room'] = 1
+    session['room'] = room_id
     return redirect(url_for('.chat'))
 
 
 @main.route('/chat/')
 def chat():
-    print(session['name'])
     return render_template('chat.html', name=session['name'], room=session['room'])
