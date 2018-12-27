@@ -1,4 +1,5 @@
 import random, string
+import webbrowser
 
 from flask import Flask, render_template, session
 from flask_sse import sse
@@ -133,7 +134,9 @@ def join(callee):
     return 'joined'
 
 
-@app.route("/join2/")    
-def join2():
+@app.route("/join2/<string:user>/", methods=['GET'])    
+def join2(user):
+    webbrowser.open('http://0.0.0.0:5000/'+ user + '/', new=1)
     return render_template('pv.html')
+
             

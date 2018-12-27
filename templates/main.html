@@ -302,7 +302,7 @@ var source2 = new EventSource("/stream?channel=s");
 source2.addEventListener('join', function(event) {
     alert(room_id)
     var data = JSON.parse(event.data);
-    window.location.pathname = '/join2/';
+    window.location.pathname = '/join2/' + session + '/';
 }, false);
 
 
