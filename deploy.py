@@ -143,3 +143,20 @@ def join2(user, room):
     return render_template('pv.html')
 
             
+@app.route("/videochat1/<string:user>/", methods=['GET'])    
+def videochat1(user):
+    print(user)
+    print('sssss')
+    sse.publish({"message": 'joined video chat'}, type='joinv', channel="v")
+
+
+@app.route("/videochat/<string:user>/", methods=['GET'])    
+def videochat(user):
+    return render_template('videochat.html', user=user)
+
+
+@app.route("/send/<channel_name>/<massage_type>", methods=['POST'])
+def send(channel_name, massage_type):
+    print("Hello channel send!")
+    sse.publish({"message": request.data}, type=massage_type, channel=channel_name)
+    return "send", massage_type, "to", channel_name    

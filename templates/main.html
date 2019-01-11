@@ -288,6 +288,11 @@ function select(room) {
   xhttp.send();
 }
 
+function videochat() {
+  var xhttp = new XMLHttpRequest(); 
+  xhttp.open("GET", "/videochat1/" + session + "/", true);
+  xhttp.send();
+}
 
 
 var source1 = new EventSource("/stream?channel=r");
@@ -302,6 +307,13 @@ var source2 = new EventSource("/stream?channel=s");
 source2.addEventListener('join', function(event) {
     var data = JSON.parse(event.data);
     window.location.pathname = '/join2/' + session + '/' + room_id + '/';
+}, false);
+
+
+var source2 = new EventSource("/stream?channel=v");
+source2.addEventListener('joinv', function(event) {
+    var data = JSON.parse(event.data);
+    window.location.pathname = '/videochat/' + session + '/';
 }, false);
 
 
@@ -375,7 +387,9 @@ source2.addEventListener('join', function(event) {
   
 </dir>
 
-
+<div id="video-chat">
+    <button type="button" class="btn--blue" onclick="videochat()">video chat</button>
+</div>
 </div>
 </body>
 </html>
