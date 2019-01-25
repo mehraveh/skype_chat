@@ -256,14 +256,14 @@ function contacts() {
 }
 
 
-function add(user) {
+function addc(user) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       alert(this.responseText);
     }
   }  
-  xhttp.open("GET", "/addcontact/" + session + "/" + user + "/"  ,true);
+  xhttp.open("POST", "/add/" + session + "/" + user + "/"  ,true);
   xhttp.send();
 }
 
@@ -276,7 +276,7 @@ function mycontacts() {
 
     }
   }  
-  xhttp.open("POST", "/mycontacts/", true);
+  xhttp.open("POST", "/mycontacts/" + session + '/', true);
   xhttp.send();
 }
 
@@ -284,16 +284,20 @@ function mycontacts() {
 function select(room) {
   var xhttp = new XMLHttpRequest(); 
   room_id = room
+  xhttp.withCredentials = true;
   xhttp.open("POST", "/join/" + session + "/", true);
   xhttp.send();
 }
 
 function videochat() {
-  var xhttp = new XMLHttpRequest(); 
-  xhttp.open("GET", "/videochat1/" + session + "/", true);
-  xhttp.send();
+    window.location="/videochat/"+'v'+'/';
+
 }
 
+function videochatacpt() {
+   window.location="/videochatacpt/"+'v'+'/';
+
+}
 
 var source1 = new EventSource("/stream?channel=r");
 source1.addEventListener('room', function(event) {
@@ -306,16 +310,18 @@ source1.addEventListener('room', function(event) {
 var source2 = new EventSource("/stream?channel=s");
 source2.addEventListener('join', function(event) {
     var data = JSON.parse(event.data);
-    window.location.pathname = '/join2/' + session + '/' + room_id + '/';
+    alert('trrr')
+    window.open('http://192.168.43.241:5000/' + session + '/' + room_id + '/')
 }, false);
 
-
-var source2 = new EventSource("/stream?channel=v");
-source2.addEventListener('joinv', function(event) {
+/*
+var source3 = new EventSource("/stream?channel=ss");
+source3.addEventListener('join2', function(event) {
     var data = JSON.parse(event.data);
-    window.location.pathname = '/videochat/' + session + '/';
+    alert('trrr')
+    window.open('http://0.0.0.0:5000/' + session + '/' + room_id + '/')
 }, false);
-
+*/
 
 </script>
 <div id="login-form">
@@ -389,6 +395,9 @@ source2.addEventListener('joinv', function(event) {
 
 <div id="video-chat">
     <button type="button" class="btn--blue" onclick="videochat()">video chat</button>
+</div>
+<div id="video-chatacpt">
+    <button type="button" class="btn--blue" onclick="videochatacpt()">video acpt</button>
 </div>
 </div>
 </body>

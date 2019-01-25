@@ -1,11 +1,12 @@
 import random, string
 import webbrowser
+import base64
 
 from flask import request
 from flask import Flask, render_template, session
 from flask_sse import sse
 from flask_session import Session
-
+from werkzeug.datastructures import ImmutableMultiDict
 from api.models import *
 
 
@@ -73,14 +74,19 @@ def create(caller, callee):
     length = random.randint(5,15)
     room_id  = randomword(length)
     caller_o = SkypeUserModel.objects(username=caller).first()
-    if not caller_o:
-        return 'The caller dosent exist'
     callee_o = SkypeUserModel.objects(username=callee).first()
-    if not callee_o:
-        return 'The callee dosent exist'
+    message = ''
+    if not caller_o:
+        message = 'The caller dosent exist'
+    elif not callee_o:
+        message = 'The callee dosent exist'
+    elif not callee in caller_o.contacts:
+        message = 'Sorry he/she isnt in your contacts'
+    else:
+        message = 'new chat request from ' + room.caller + " to " + room.callee 
     room = SkypeRoomModel(room_id=room_id, caller=caller,  callee=callee)
     room.save()
-    sse.publish({"message": 'new chat request from ' + room.caller + " to " + room.callee +' 😌 '} , type='room', channel='r')
+    sse.publish({"message": message} , type='room', channel='r')
     return session['username'] +' sent chat request to ' + callee + ' with chat id ' + room_id + '. wait for her/him to accept' + ' $ ' + room_id
 
 
@@ -102,12 +108,12 @@ def contacts():
     html_code = ''
     users = SkypeUserModel.objects()
     for user in users:
-        html_code += '<p>' + user.username +'<br>'+ '<button type="submit" onclick="add(' + "'" + user.username + "'"+ ')"> ' + 'add' +' </button>' + '</p> <br>'
+        html_code += '<p>' + user.username +'<br>'+ '<button type="submit" onclick="addc(' + "'" + user.username + "'"+ ')"> ' + 'add' +' </button>' + '</p> <br>'
     return html_code
 
 
-@app.route("/addcontact/<string:username>/<string:contact>", methods=['GET'])
-def addcontact(username, contact):
+@app.route("/add/<string:username>/<string:contact>/", methods=['POST'])
+def add(username, contact):
     print(username, contact)
     user = SkypeUserModel.objects(username=username).first()
     if not contact in user.contacts:
@@ -116,7 +122,7 @@ def addcontact(username, contact):
     return 'success'
 
 
-@app.route("/mycontacts/<string:username>", methods=['POST'])
+@app.route("/mycontacts/<string:username>/", methods=['POST'])
 def mycontacts(username):
     html_code = ''
     user = SkypeUserModel.objects(username=username).first()
@@ -134,13 +140,15 @@ def join(callee):
     return 'joined'
 
 
-@app.route("/join2/<string:user>/<string:room>/", methods=['GET'])    
-def join2(user, room):
-    b = request.user_agent.browser
-    if b == 'chrome':
-        b = 'google-chrome'
-    webbrowser.get(b).open_new_tab('http://0.0.0.0:5000/'+ user + '/' + room + '/')
-    return render_template('pv.html')
+# @app.route("/join2/<string:user>/<string:room>/", methods=['GET'])    
+# def join2(user, room):
+#     # b = request.user_agent.browser
+#     # if b == 'chrome':
+#     #     b = 'google-chrome'
+#     sse.publish({"message": 'joined chat 2'}, type='join2', channel="ss")    
+#     return 'joineddd'
+#     # webbrowser.get(b).open_new_tab('http://192.168.1.51:5000/'+ user + '/' + room + '/')
+#     # return render_template('pv.html')
 
             
 @app.route("/videochat1/<string:user>/", methods=['GET'])    
@@ -148,6 +156,7 @@ def videochat1(user):
     print(user)
     print('sssss')
     sse.publish({"message": 'joined video chat'}, type='joinv', channel="v")
+    return 'joined'
 
 
 @app.route("/videochat/<string:user>/", methods=['GET'])    
@@ -155,8 +164,21 @@ def videochat(user):
     return render_template('videochat.html', user=user)
 
 
+@app.route("/videochatacpt/<string:user>/", methods=['GET'])    
+def videochatacpt(user):
+    return render_template('videochatacpt.html', user=user)
+
+
 @app.route("/send/<channel_name>/<massage_type>", methods=['POST'])
 def send(channel_name, massage_type):
-    print("Hello channel send!")
+    print("Hello channel send!" + ' ' + massage_type + ' ' + channel_name)
+    print(request.data)
     sse.publish({"message": request.data}, type=massage_type, channel=channel_name)
-    return "send", massage_type, "to", channel_name    
+    return "send"  
+
+
+@app.route('/save/', methods=["POST"])
+def save():
+    video_stream = request.form.get('video')
+    print(video_stream)
+    return request.form['video']
