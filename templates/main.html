@@ -310,7 +310,6 @@ source1.addEventListener('room', function(event) {
 var source2 = new EventSource("/stream?channel=s");
 source2.addEventListener('join', function(event) {
     var data = JSON.parse(event.data);
-    alert('trrr')
     window.open('http://192.168.43.241:5000/' + session + '/' + room_id + '/')
 }, false);
 

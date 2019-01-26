@@ -5885,16 +5885,6 @@ Note that you may want to host these scripts in your own server
         var xhr = new XMLHttpRequest();
         var inp = "/send/"+id+"/"+type;
         xhr.open('POST', inp, true);
-    // xhr.onload = function () {
-    //     if (xhr.readyState === xhr.DONE) {
-    //         if (xhr.status === 200) {
-    //             console.log(xhr.response);
-    //             console.log(xhr.responseText);
-    //         }
-    //     }
-    // };
-/*        alert('xhr a ' + massage )
-        alert(id + ' ' + type)*/
         console.log('msg:', massage);
         xhr.send(massage);
     }
